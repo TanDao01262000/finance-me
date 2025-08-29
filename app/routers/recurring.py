@@ -3,7 +3,7 @@ from __future__ import annotations
 from datetime import date
 from typing import List
 
-from fastapi import APIRouter, Depends, HTTPException, Query
+from fastapi import APIRouter, Depends, HTTPException, Query, Response
 from sqlmodel import Session, select
 
 from ..db import get_session
@@ -52,13 +52,14 @@ def update_recurring(
     return db_obj
 
 
-@router.delete("/{recurring_id}", status_code=204)
-def delete_recurring(*, session: Session = Depends(get_session), recurring_id: int) -> None:
+@router.delete("/{recurring_id}", status_code=204, response_class=Response)
+def delete_recurring(*, session: Session = Depends(get_session), recurring_id: int) -> Response:
     db_obj = session.get(Recurring, recurring_id)
     if not db_obj:
-        return
+        return Response(status_code=204)
     session.delete(db_obj)
     session.commit()
+    return Response(status_code=204)
 
 
 @router.post("/{recurring_id}/run", response_model=RecurringRead)

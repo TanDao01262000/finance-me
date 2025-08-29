@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import List
 
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Response
 from sqlmodel import Session, select
 
 from ..db import get_session
@@ -50,10 +50,11 @@ def update_category(
     return db_obj
 
 
-@router.delete("/{category_id}", status_code=204)
-def delete_category(*, session: Session = Depends(get_session), category_id: int) -> None:
+@router.delete("/{category_id}", status_code=204, response_class=Response)
+def delete_category(*, session: Session = Depends(get_session), category_id: int) -> Response:
     db_obj = session.get(Category, category_id)
     if not db_obj:
-        return
+        return Response(status_code=204)
     session.delete(db_obj)
     session.commit()
+    return Response(status_code=204)

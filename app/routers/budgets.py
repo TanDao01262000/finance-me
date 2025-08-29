@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import List
 
-from fastapi import APIRouter, Depends, HTTPException, Query
+from fastapi import APIRouter, Depends, HTTPException, Query, Response
 from sqlmodel import Session, select, func
 
 from ..db import get_session
@@ -53,13 +53,14 @@ def update_budget(*, session: Session = Depends(get_session), budget_id: int, bu
     return db_obj
 
 
-@router.delete("/{budget_id}", status_code=204)
-def delete_budget(*, session: Session = Depends(get_session), budget_id: int) -> None:
+@router.delete("/{budget_id}", status_code=204, response_class=Response)
+def delete_budget(*, session: Session = Depends(get_session), budget_id: int) -> Response:
     db_obj = session.get(Budget, budget_id)
     if not db_obj:
-        return
+        return Response(status_code=204)
     session.delete(db_obj)
     session.commit()
+    return Response(status_code=204)
 
 
 @router.get("/{category_id}/usage")

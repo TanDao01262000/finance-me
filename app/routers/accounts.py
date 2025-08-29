@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import List, Optional
 
-from fastapi import APIRouter, Depends, HTTPException, Query
+from fastapi import APIRouter, Depends, HTTPException, Query, Response
 from sqlmodel import Session, select, func
 
 from ..db import get_session
@@ -58,13 +58,14 @@ def update_account(
     return db_obj
 
 
-@router.delete("/{account_id}", status_code=204)
-def delete_account(*, session: Session = Depends(get_session), account_id: int) -> None:
+@router.delete("/{account_id}", status_code=204, response_class=Response)
+def delete_account(*, session: Session = Depends(get_session), account_id: int) -> Response:
     db_obj = session.get(Account, account_id)
     if not db_obj:
-        return
+        return Response(status_code=204)
     session.delete(db_obj)
     session.commit()
+    return Response(status_code=204)
 
 
 @router.get("/{account_id}/balance")

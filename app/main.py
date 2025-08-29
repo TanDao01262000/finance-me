@@ -4,7 +4,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from .db import create_db_and_tables
-from .routers import accounts, categories, transactions, budgets, recurring, goals, reports, health
+from .routers import accounts, categories, transactions, budgets, recurring, goals, reports, health, ai
 
 
 def create_app() -> FastAPI:
@@ -30,6 +30,7 @@ def create_app() -> FastAPI:
     app.include_router(recurring.router)
     app.include_router(goals.router)
     app.include_router(reports.router)
+    app.include_router(ai.router)
 
     return app
 

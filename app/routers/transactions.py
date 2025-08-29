@@ -3,7 +3,7 @@ from __future__ import annotations
 from datetime import date
 from typing import List, Optional
 
-from fastapi import APIRouter, Depends, HTTPException, Query
+from fastapi import APIRouter, Depends, HTTPException, Query, Response
 from sqlmodel import Session, select
 
 from ..db import get_session
@@ -80,10 +80,11 @@ def update_transaction(
     return db_obj
 
 
-@router.delete("/{transaction_id}", status_code=204)
-def delete_transaction(*, session: Session = Depends(get_session), transaction_id: int) -> None:
+@router.delete("/{transaction_id}", status_code=204, response_class=Response)
+def delete_transaction(*, session: Session = Depends(get_session), transaction_id: int) -> Response:
     db_obj = session.get(Transaction, transaction_id)
     if not db_obj:
-        return
+        return Response(status_code=204)
     session.delete(db_obj)
     session.commit()
+    return Response(status_code=204)

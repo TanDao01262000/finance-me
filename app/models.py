@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from datetime import date, datetime
+from datetime import date as Date, datetime as DateTime
 from enum import Enum
 from typing import Optional
 
@@ -75,7 +75,7 @@ class CategoryUpdate(SQLModel):
 
 
 class TransactionBase(SQLModel):
-    date: date = Field(index=True)
+    date: Date = Field(index=True)
     amount: float = Field(description="Positive for income, negative for expenses")
     description: Optional[str] = None
     payee: Optional[str] = Field(default=None, index=True)
@@ -86,8 +86,8 @@ class TransactionBase(SQLModel):
 
 class Transaction(TransactionBase, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
-    created_at: datetime = Field(default_factory=datetime.utcnow, index=True)
-    updated_at: datetime = Field(default_factory=datetime.utcnow, index=True)
+    created_at: DateTime = Field(default_factory=DateTime.utcnow, index=True)
+    updated_at: DateTime = Field(default_factory=DateTime.utcnow, index=True)
 
     account: Account = Relationship(back_populates="transactions")  # type: ignore
     category: Optional[Category] = Relationship(back_populates="transactions")  # type: ignore
@@ -99,12 +99,12 @@ class TransactionCreate(TransactionBase):
 
 class TransactionRead(TransactionBase):
     id: int
-    created_at: datetime
-    updated_at: datetime
+    created_at: DateTime
+    updated_at: DateTime
 
 
 class TransactionUpdate(SQLModel):
-    date: Optional[date] = None
+    date: Optional[Date] = None
     amount: Optional[float] = None
     description: Optional[str] = None
     payee: Optional[str] = None
@@ -149,8 +149,8 @@ class Frequency(str, Enum):
 class RecurringBase(SQLModel):
     name: str
     frequency: Frequency = Field(default=Frequency.monthly)
-    next_occurrence: date
-    end_date: Optional[date] = None
+    next_occurrence: Date
+    end_date: Optional[Date] = None
     amount: float
     description: Optional[str] = None
     account_id: int = Field(foreign_key="account.id")
@@ -174,8 +174,8 @@ class RecurringRead(RecurringBase):
 class RecurringUpdate(SQLModel):
     name: Optional[str] = None
     frequency: Optional[Frequency] = None
-    next_occurrence: Optional[date] = None
-    end_date: Optional[date] = None
+    next_occurrence: Optional[Date] = None
+    end_date: Optional[Date] = None
     amount: Optional[float] = None
     description: Optional[str] = None
     account_id: Optional[int] = None
@@ -186,7 +186,7 @@ class RecurringUpdate(SQLModel):
 class GoalBase(SQLModel):
     name: str
     target_amount: float
-    target_date: Optional[date] = None
+    target_date: Optional[Date] = None
     current_amount: float = 0.0
 
 
@@ -205,5 +205,5 @@ class GoalRead(GoalBase):
 class GoalUpdate(SQLModel):
     name: Optional[str] = None
     target_amount: Optional[float] = None
-    target_date: Optional[date] = None
+    target_date: Optional[Date] = None
     current_amount: Optional[float] = None
