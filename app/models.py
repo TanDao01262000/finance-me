@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from datetime import date as Date, datetime as DateTime
 from enum import Enum
-from typing import Optional
+from typing import Optional, List
 
 from sqlmodel import Field, Relationship, SQLModel
 
@@ -30,7 +30,6 @@ class AccountBase(SQLModel):
 
 class Account(AccountBase, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
-    transactions: list[Transaction] = Relationship(back_populates="account")  # type: ignore
 
 
 class AccountCreate(AccountBase):
@@ -56,8 +55,7 @@ class CategoryBase(SQLModel):
 
 class Category(CategoryBase, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
-    parent: Optional[Category] = Relationship(sa_relationship_kwargs={"remote_side": "Category.id"})  # type: ignore
-    transactions: list[Transaction] = Relationship(back_populates="category")  # type: ignore
+    # Relationship fields removed for simplicity; can be reintroduced with proper SQLAlchemy Mapped typing
 
 
 class CategoryCreate(CategoryBase):
@@ -88,9 +86,6 @@ class Transaction(TransactionBase, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
     created_at: DateTime = Field(default_factory=DateTime.utcnow, index=True)
     updated_at: DateTime = Field(default_factory=DateTime.utcnow, index=True)
-
-    account: Account = Relationship(back_populates="transactions")  # type: ignore
-    category: Optional[Category] = Relationship(back_populates="transactions")  # type: ignore
 
 
 class TransactionCreate(TransactionBase):
